@@ -8,5 +8,18 @@ services:
     volumes:
       - chromadb_data:/chroma
 
+  backend:
+    build:
+      context: .
+      dockerfile: ./srcs/Dockerfile
+    container_name: backend_go
+    ports:
+      - "8080:8080" 
+    env_file:
+      - .env
+    # depends_on:
+    #   - chromadb
+    restart: unless-stopped
+
 volumes:
   chromadb_data:
