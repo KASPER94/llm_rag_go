@@ -1,0 +1,12 @@
+services:
+  chromadb:
+    image: ghcr.io/chroma-core/chroma:latest
+    container_name: chromadb
+    ports:
+      - "7000:7000"
+    restart: unless-stopped
+    volumes:
+      - chromadb_data:/chroma
+
+volumes:
+  chromadb_data:

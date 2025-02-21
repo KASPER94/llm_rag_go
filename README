@@ -1,0 +1,5 @@
+go mod init llm-rag-go
+go get github.com/gin-gonic/gin  # Framework HTTP
+go get github.com/sashabaranov/go-openai
+go get github.com/tmc/langchaingo  # Librairie Go pour RAG et LLM
+go get github.com/chroma-core/chroma-go  # Client pour ChromaDB
