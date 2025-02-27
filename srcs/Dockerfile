@@ -1,8 +1,8 @@
-FROM golang:1.21 AS builder
+FROM golang:1.22 AS builder
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
+COPY srcs/go.mod srcs/go.sum ./
 RUN go mod download
 
 COPY srcs/. .

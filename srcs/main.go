@@ -16,14 +16,15 @@ func init() {
 	if apiKey == "" {
 		log.Fatal("API_KEY missing")
 	}
+	mistralClient = openai.NewClient(apiKey)
 }
 
-func generateResponse(c *gin.Contect) {
+func generateResponse(c *gin.Context) {
 	var request struct {
-		Prompt string `json:"prompt`
+		Prompt string `json:"prompt"`
 	}
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.ShouldBindJSON(http.StatusBadRequest, gin.H{"error": "Wrong Json format"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Wrong Json format"})
 		return
 	}
 	resp, err := mistralClient.CreateChatCompletion(c, openai.ChatCompletionRequest{
@@ -45,5 +46,13 @@ func main() {
 	r := gin.Default()
 
 	r.POST("/chat", generateResponse)
-	log.Println("server ok")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	
+	log.Println("Server starting on port", port)
+	if err := r.Run(":" + port); err != nil {
+		log.Fatal("Failed to start server:", err)
+	}
 }
