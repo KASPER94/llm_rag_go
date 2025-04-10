@@ -4,19 +4,19 @@ all:
 	make up
 
 python:
-	@docker-compose -f ./docker-compose.yml up -d chromadb backend
+	@docker compose -f ./docker-compose.yml up -d chromadb backend llm
 
 build:
-	@docker-compose -f ./docker-compose.yml build
+	@docker compose -f ./docker-compose.yml build
 
 up:
-	@docker-compose -f ./docker-compose.yml up
+	@docker compose -f ./docker-compose.yml up
 
 down:
-	@docker-compose -f ./docker-compose.yml down
+	@docker compose -f ./docker-compose.yml down
 
 clean:
-	@docker-compose -f ./docker-compose.yml down --rmi all --volumes --remove-orphans
+	@docker compose -f ./docker-compose.yml down --rmi all --volumes --remove-orphans
 
 re: clean all
 

@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     volumes:
       - chromadb_data:/chroma
-  
+
   backend:
     build:
       context: ./srcs/backend_FastAPI 
@@ -23,6 +23,18 @@ services:
     ports:
       - "8501:8501" 
   
+  llm:
+    build:
+      context: ./srcs/Docker_llm
+      dockerfile: Dockerfile
+    container_name: Docker_llm
+    volumes:
+      - ./srcs/Docker_llm:/app
+    depends_on:
+      - backend
+    ports:
+      - "11434:11434"
+
   backend2:
     build:
       context: .

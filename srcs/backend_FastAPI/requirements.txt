@@ -4,3 +4,6 @@ chromadb[client]
 sentence-transformers
 pypdf
 streamlit
+torch
+transformers
+faiss-cpu

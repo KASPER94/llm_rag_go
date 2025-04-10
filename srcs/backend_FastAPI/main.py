@@ -7,6 +7,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
+from langchain_community.llms import Ollama
 from chromadb.config import Settings
 
 chroma_host = os.getenv("CHROMA_HOST", "localhost")
@@ -44,7 +45,9 @@ if uploaded_file and question:
     vectordb.add_documents(chunks)
 
     retriever = vectordb.as_retriever()
-    qa_chain = RetrievalQA.from_chain_type(llm=ChatOpenAI(temperature=0), retriever=retriever)
+    llm = Ollama(model="gemma:2b", base_url="http://llm:11434")
+    qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+    # qa_chain = RetrievalQA.from_chain_type(llm=ChatOpenAI(temperature=0), retriever=retriever)
 
     result = qa_chain.run(question)
     st.write("### Réponse :")
