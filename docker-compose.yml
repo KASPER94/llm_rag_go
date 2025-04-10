@@ -3,15 +3,30 @@ services:
     image: ghcr.io/chroma-core/chroma:latest
     container_name: chromadb
     ports:
-      - "7000:7000"
+      - "7001:8000"
     restart: unless-stopped
     volumes:
       - chromadb_data:/chroma
-
+  
   backend:
     build:
+      context: ./srcs/backend_FastAPI 
+      dockerfile: Dockerfile
+    container_name: rag-backend
+    volumes:
+      - ./srcs/backend_FastAPI:/app
+    depends_on:
+      - chromadb
+    environment:
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+    ports:
+      - "8501:8501" 
+  
+  backend2:
+    build:
       context: .
-      dockerfile: ./srcs/Dockerfile
+      dockerfile: ./srcs/backend_Fiber/Dockerfile
     container_name: backend_go
     ports:
       - "8080:8080" 
@@ -20,6 +35,7 @@ services:
     # depends_on:
     #   - chromadb
     restart: unless-stopped
+  
 
 volumes:
   chromadb_data:

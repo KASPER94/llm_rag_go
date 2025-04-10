@@ -3,6 +3,9 @@ all:
 	make build
 	make up
 
+python:
+	@docker-compose -f ./docker-compose.yml up -d chromadb backend
+
 build:
 	@docker-compose -f ./docker-compose.yml build
 

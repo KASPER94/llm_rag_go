@@ -1,3 +1,4 @@
+init de GoLang
 go mod init llm-rag-go
 go get github.com/gin-gonic/gin  # Framework HTTP
 go get github.com/sashabaranov/go-openai
@@ -5,3 +6,107 @@ go get github.com/tmc/langchaingo  # Librairie Go pour RAG et LLM
 go get github.com/chroma-core/chroma-go  # Client pour ChromaDB
 
 
+RAG with LangChain:
+┌───────────────┐
+│   PDF / TXT   │ ◄─── Utilisateur charge un document
+└──────┬────────┘
+       │
+       ▼
+┌────────────────────┐
+│ PyPDFLoader / TXT  │ ◄─── Extraction du contenu texte
+└──────┬─────────────┘
+       │
+       ▼
+┌────────────────────────────┐
+│ Text Splitter (chunks)     │ ◄─── Découpe en morceaux gérables
+└──────┬─────────────────────┘
+       │
+       ▼
+┌──────────────────────────────────────┐
+│ Sentence Transformers (Embeddings)   │ ◄─── Transforme texte → vecteurs
+└──────┬───────────────────────────────┘
+       │
+       ▼
+┌────────────────────────────┐
+│ ChromaDB (vector store)    │ ◄─── Indexation + stockage des vecteurs
+└──────┬─────────────────────┘
+       │
+       ▼
+┌─────────────────────────────┐
+│ Question posée par l'user   │
+└──────┬──────────────────────┘
+       │
+       ▼
+┌──────────────────────────────────────────┐
+│ Embedding de la question (vecteur)       │
+│ + recherche des chunks similaires        │ ◄─── via `retriever = vectorstore.as_retriever()`
+└──────┬───────────────────────────────────┘
+       │
+       ▼
+┌────────────────────────────────────┐
+│ ChatOpenAI / LLM                   │ ◄─── Le modèle génère une réponse
+│ + contexte = réponse pertinente    │
+└────────────────────────────────────┘
+
+
+utilisation de LangChain:
+✂️ 2. from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+➤ Ce que ça fait :
+Coupe un document long en petits morceaux (chunks) pour pouvoir :
+
+les indexer proprement dans la base vectorielle
+respecter la limite de tokens des modèles de langage
+📦 Exemple :
+splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+chunks = splitter.split_documents(documents)
+➡️ Chaque chunk fait environ 500 caractères, et chevauche de 50 pour garder du contexte entre eux.
+
+🔤 3. from langchain.embeddings import HuggingFaceEmbeddings
+
+➤ Ce que ça fait :
+Transforme chaque chunk de texte en vecteur numérique (embedding). Ces vecteurs sont ensuite stockés dans Chroma et utilisés pour retrouver les passages les plus pertinents.
+
+📦 Exemple :
+embedding_model = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
+)
+➡️ Ce modèle encode chaque texte en vecteurs de 384 dimensions.
+
+🧠 4. from langchain.vectorstores import Chroma
+
+➤ Ce que ça fait :
+Permet de stocker les vecteurs générés précédemment, de façon à pouvoir ensuite faire une recherche sémantique rapide.
+
+📦 Exemple :
+vectordb = Chroma(
+    collection_name="rag_collection",
+    embedding_function=embedding_model,
+    client_settings=chroma_client_settings
+)
+➡️ Tu peux ensuite faire :
+
+retriever = vectordb.as_retriever()
+pour utiliser cette base dans ta chaîne RAG.
+
+🔗 5. from langchain.chains import RetrievalQA
+
+➤ Ce que ça fait :
+Crée une chaîne RAG complète qui combine :
+
+la recherche des chunks pertinents via retriever
+la génération d’une réponse via un LLM (comme GPT)
+📦 Exemple :
+qa_chain = RetrievalQA.from_chain_type(llm=ChatOpenAI(), retriever=retriever)
+➡️ Ensuite, tu poses une question :
+
+response = qa_chain.run("Quels sont les points clés du document ?")
+🤖 6. from langchain.chat_models import ChatOpenAI
+
+➤ Ce que ça fait :
+Permet d’utiliser un modèle de langage (GPT-3.5, GPT-4, etc.) de façon propre avec LangChain.
+
+📦 Exemple :
+llm = ChatOpenAI(temperature=0)
+temperature=0 = réponse plus précise et déterministe
+tu peux aussi choisir model_name="gpt-4" si tu veux GPT-4
