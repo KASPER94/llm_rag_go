@@ -28,6 +28,7 @@ func handler(c *fiber.Ctx) error {
 		r = "None"
 	} else {
 		r = "Hello World"
+		r = indexing()
 	}
 	return c.SendString(r)
 }

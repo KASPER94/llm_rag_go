@@ -1,19 +1,28 @@
-FROM golang:1.22 AS builder
+FROM golang:latest AS builder
 
 WORKDIR /app
 
-COPY srcs/go.mod srcs/go.sum ./
-RUN go mod download
+# # COPY srcs/go.mod srcs/go.sum ./
+COPY srcs/backend_Fiber/* .
+# RUN go mod init feedme
+# RUN go mod tidy
+# RUN go mod download
 
-COPY srcs/. .
+# RUN go get -u github.com/cosmtrek/air
+RUN go install github.com/air-verse/air@latest
 
-RUN go build -o server main.go
 
-FROM debian:bookworm-slim
+# RUN go build -o server .
 
-WORKDIR /root/
-COPY --from=builder /app/server .
+# FROM debian:bookworm-slim
+
+# WORKDIR /root/
+# COPY --from=builder /app/server .
+
+# EXPOSE 8080
+
+# CMD ["./server", "air"]
 
 EXPOSE 8080
 
-CMD ["./server"]
+CMD [ "air", "-c", ".air.toml" ]

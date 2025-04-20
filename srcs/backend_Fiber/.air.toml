@@ -1,0 +1,15 @@
+# .air.toml
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  cmd = "go build -o tmp/server ."
+  bin = "server"
+  full_bin = "tmp/server"
+  delay = 1000
+  log = "air_errors.log"
+  stop_on_error = true
+
+[log]
+  color = true
+  time = true

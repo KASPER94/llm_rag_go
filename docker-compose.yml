@@ -44,6 +44,8 @@ services:
       - "8080:8080" 
     env_file:
       - .env
+    volumes: 
+      - ./srcs/backend_Fiber:/app
     # depends_on:
     #   - chromadb
     restart: unless-stopped
